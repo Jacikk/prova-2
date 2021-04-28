@@ -1,6 +1,5 @@
 package com.uniamerica.prova2.service;
 
-import com.uniamerica.prova2.controller.CarroController;
 import com.uniamerica.prova2.model.Carro;
 import com.uniamerica.prova2.model.Reserva;
 import com.uniamerica.prova2.repository.CarroRepository;
@@ -87,8 +86,8 @@ public class ReservaService {
     public List<Carro> veiculosDisponiveisNoPeriodo(Calendar inicio, Calendar fim) {
 
         List<Reserva> reservas = reservaRepository.findAll();
-
-        List<Carro> carrosDisponiveis = new ArrayList<>();
+        List<Carro> carrosNoPeriodo = new ArrayList<>();
+        List<Carro> carros = carroRepository.findAll();
 
         for (Reserva bd:reservas) {
 
@@ -99,20 +98,23 @@ public class ReservaService {
             diaDevolucao.setTime(bd.getDataDeDevolucao());
 
             if(fim.after(diaRetirada) && fim.before(diaDevolucao)){
-                reservas.remove(bd);
+                carrosNoPeriodo.add(bd.getCarro());
             } else if(inicio.after(diaRetirada) && inicio.before(diaDevolucao)){
-                reservas.remove(bd);
+                carrosNoPeriodo.add(bd.getCarro());
             } else if(diaRetirada.after(inicio) && diaRetirada.before(diaDevolucao)){
-                reservas.remove(bd);
+                carrosNoPeriodo.add(bd.getCarro());
             } else if(diaDevolucao.after(inicio) && diaDevolucao.before(fim)){
-                reservas.remove(bd);
+                carrosNoPeriodo.add(bd.getCarro());
             }
         }
-        for (Reserva temp:reservas) {
+        for (Carro car: carrosNoPeriodo) {
+            boolean found =false;
 
-            carrosDisponiveis.add(temp.getCarro());
-
+            for(Carro car2: carros){
+                if(car2.equals(car)) found = true;
+            }
+            carros.remove(car);
         }
-        return carrosDisponiveis;
+        return carros;
     }
 }
