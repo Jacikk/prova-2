@@ -87,8 +87,7 @@ public class ReservaService {
     public List<Carro> veiculosDisponiveisNoPeriodo(Calendar inicio, Calendar fim) {
 
         List<Reserva> reservas = reservaRepository.findAll();
-        List<Reserva> reservaForaDoPeriodo = new ArrayList<>();
-        
+
         List<Carro> carrosDisponiveis = new ArrayList<>();
 
         for (Reserva bd:reservas) {
@@ -100,16 +99,19 @@ public class ReservaService {
             diaDevolucao.setTime(bd.getDataDeDevolucao());
 
             if(fim.after(diaRetirada) && fim.before(diaDevolucao)){
-
+                reservas.remove(bd);
             } else if(inicio.after(diaRetirada) && inicio.before(diaDevolucao)){
-
+                reservas.remove(bd);
             } else if(diaRetirada.after(inicio) && diaRetirada.before(diaDevolucao)){
-
+                reservas.remove(bd);
             } else if(diaDevolucao.after(inicio) && diaDevolucao.before(fim)){
-
-            } else {
-
+                reservas.remove(bd);
             }
+        }
+        for (Reserva temp:reservas) {
+
+            carrosDisponiveis.add(temp.getCarro());
+
         }
         return carrosDisponiveis;
     }
